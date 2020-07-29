@@ -1,0 +1,190 @@
+---
+title: "roomba_reviews"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(tidytext)
+```
+
+```{r}
+roomba <- read_csv("Roomba Reviews.csv")
+roomba
+```
+
+```{r}
+roomba %>%
+  summarise(number_rows = n())
+```
+
+
+```{r}
+roomba %>%
+  group_by(Product) %>%
+  summarise(number_rows = n())
+```
+
+```{r}
+roomba %>%
+  filter(Product == "iRobot Roomba 650 for Pets") %>%
+summarize(star_mean = mean(Stars))
+```
+
+```{r}
+roomba %>%
+
+ count(Product)%>%
+  arrange(desc(n))
+
+```
+
+```{r}
+roomba %>%
+  group_by(Product) %>%
+  summarise(star_mean = mean(Stars))
+```
+
+```{r}
+roomba %>%
+  
+  group_by(Product) %>%
+  summarise(mean(Review))
+```
+
+```{r}
+roomba
+  
+```
+```{r}
+tidy_roomba <- roomba %>%
+  unnest_tokens(word, Review)
+tidy_roomba
+```
+```{r}
+tidy_roomba %>%
+  count(word) %>%
+  arrange(desc(n))
+
+```
+
+```{r}
+stop_words
+```
+
+```{r}
+tidy_roomba2 <- roomba %>%
+  unnest_tokens(word,Review) %>%
+  anti_join(stop_words)
+tidy_roomba2
+```
+
+```{r}
+tidy_roomba2 %>%
+  count(word) %>%
+  arrange(desc(n))
+
+```
+
+```{r}
+tidy_review <- roomba %>%
+  mutate(id = row_number()) %>%
+  unnest_tokens(word, Review)%>%
+  anti_join(stop_words)
+
+  
+```
+
+```{r}
+tidy_review
+```
+
+```{r}
+word_count <- tidy_review %>%
+  count(word)%>%
+  arrange(desc(n))
+
+```
+
+
+```{r}
+words_count2 <- tidy_review %>%
+  count(word) %>%
+  filter(n > 300) %>%
+  mutate(word2 = fct_reorder(word,n))
+
+```
+```{r}
+words_count2
+```
+
+
+```{r}
+ggplot(words_count2, aes(x = word, y = n)) +
+         geom_col(fill = "#7fcdbb") +
+  coord_flip() +
+  scale_fill_brewer()
+
+ 
+```
+
+```{r}
+stop_words
+
+```
+
+```{r}
+tribble(
+  ~word, ~lexicon,
+  "roomba", "CUSTOM",
+  "2", "CUSTOM"
+)
+```
+
+
+```{r}
+stop_words_2 <- tribble( ~word,  ~lexicon,
+                         "roomba", "CUSTOM",
+                         "2", "CUSTOM"
+                         )
+stop_words_2 <- stop_words %>%
+  bind_rows(custom_stop_words)
+stop_words_2
+```
+```{r}
+roomba
+```
+
+```{r}
+tidy_review <- roomba %>%
+  mutate(id = row_number()) %>%
+  select(id, Date, Product,Stars, Review) %>%
+  unnest_tokens(word, Review)%>%
+  anti_join(stop_words_2)
+  
+```
+```{r}
+tidy_review
+```
+
+```{r}
+tidy_review %>%
+  filter(word == "roomba")
+```
+
+
+
+```{r}
+get_sentiments("bing") %>%
+count(sentiment)
+```
+```{r}
+get_sentiments("afinn")
+```
+
